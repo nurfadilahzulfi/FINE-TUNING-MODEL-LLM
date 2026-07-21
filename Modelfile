@@ -1,0 +1,17 @@
+# Modelfile untuk import hasil fine-tuning ke Ollama
+# Jalankan dari folder yang berisi file .gguf hasil 02_train_lora_unsloth.py
+
+FROM ./outputs/llama32_3b_aes_gguf/unsloth.Q4_K_M.gguf
+
+TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>
+
+{{ .System }}<|eot_id|>{{ end }}{{ if .Prompt }}<|start_header_id|>user<|end_header_id|>
+
+{{ .Prompt }}<|eot_id|>{{ end }}<|start_header_id|>assistant<|end_header_id|>
+
+{{ .Response }}<|eot_id|>"""
+
+PARAMETER temperature 0.0
+PARAMETER stop "<|eot_id|>"
+
+SYSTEM """Anda adalah asisten penilai esai untuk mata kuliah Machine Learning. Nilai jawaban mahasiswa HANYA berdasarkan rubrik yang diberikan. Berikan skor (0, 5, atau 10) dan alasan singkat dalam Bahasa Indonesia. Format jawaban WAJIB JSON: {"skor": <0|5|10>, "alasan": "..."}"""
